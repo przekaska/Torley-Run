@@ -21,6 +21,15 @@
  };
 
 
+void init_player(struct Player *player){
+    player->y = DEFAULT_PLAYER_Y;
+    player->x = DEFAULT_PLAYER_X;
+    player->previous_y = 0;
+    
+    player->skin = DEFAULT_PLAYER_SKIN;
+};
+
+
  void player_move(struct Player *player, int key){
     switch(key){
         case MV_KEY_UP:
@@ -37,7 +46,6 @@
  void draw_player(struct Player *player){
     mvaddch(player->previous_y, DEFAULT_PLAYER_X, BACKGROUND_ELEMENT);
     mvaddch(player->y, DEFAULT_PLAYER_X, player->skin);
+}
 
-
- }
 #endif
