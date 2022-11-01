@@ -12,4 +12,17 @@
  };
 
 
+ void player_move(struct Player *player, int key){
+    switch(key){
+        case MV_KEY_UP:
+            player->y++;
+            break;
+
+        case MV_KEY_DOWN:
+            player->y--;
+            break;
+    }
+ }
+
+
 #endif
