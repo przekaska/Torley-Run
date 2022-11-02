@@ -13,6 +13,7 @@ void game_loop(){
 
     while( (key = getch()) != 10){
         player_move(&player, key);
+        check_if_hit(&player);
         draw_player(&player);
 
         refresh();
