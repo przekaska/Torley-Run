@@ -11,6 +11,8 @@
 
 #define BACKGROUND_ELEMENT ' '
 
+#define WINDOW_HEIGHT 20
+#define WINDOW_WIDTH 70
 
  struct Player{
     int y;
@@ -31,6 +33,7 @@ void init_player(struct Player *player){
 
 
  void player_move(struct Player *player, int key){
+    player->previous_y = player->y;
     switch(key){
         case MV_KEY_UP:
             player->y++;
@@ -44,8 +47,8 @@ void init_player(struct Player *player){
 
 
  void draw_player(struct Player *player){
-    mvaddch(player->previous_y, DEFAULT_PLAYER_X, BACKGROUND_ELEMENT);
-    mvaddch(player->y, DEFAULT_PLAYER_X, player->skin);
+    mvaddch(WINDOW_HEIGHT - player->previous_y, DEFAULT_PLAYER_X, BACKGROUND_ELEMENT);
+    mvaddch(WINDOW_HEIGHT - player->y, DEFAULT_PLAYER_X, player->skin);
 }
 
 #endif
