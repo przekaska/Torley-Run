@@ -20,6 +20,7 @@
     int previous_y;
 
     int skin;
+    bool did_hit
  };
 
 
@@ -44,6 +45,13 @@ void init_player(struct Player *player){
             break;
     }
  }
+
+
+void check_if_hit(struct Player *player){
+    if((A_CHARTEXT & mvwinch(stdscr, WINDOW_HEIGHT - player->y, DEFAULT_PLAYER_X)) == 'T')
+        player->did_hit = true;
+}
+
 
 
  void draw_player(struct Player *player){
