@@ -20,8 +20,8 @@
     int previous_y;
 
     int skin;
-    bool did_hit
- };
+    bool did_hit;
+};
 
 
 void init_player(struct Player *player){
@@ -33,7 +33,7 @@ void init_player(struct Player *player){
 };
 
 
- void player_move(struct Player *player, int key){
+void player_move(struct Player *player, int key){
     player->previous_y = player->y;
     switch(key){
         case MV_KEY_UP:

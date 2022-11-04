@@ -1,6 +1,7 @@
 #ifndef TR_PATHS_C
 #define TR_PATHS_C
 
+#include <stdbool.h>
 
 #include "player.c"
 
@@ -12,6 +13,21 @@ struct Path{
     int maxboty;
 
     void (*behaviour)(struct Path*, int);
+};
+
+
+struct PathMerger{
+    struct Path *upperPath;
+    struct Path *lowerPath;
+    
+    int upperVelocity;
+    int lowerVelocity;
+
+    int endtopy;
+    int endboty;
+
+    int is_upper_done;
+    int is_lower_done;
 };
 
 
