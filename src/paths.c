@@ -41,5 +41,29 @@ void continuePath(struct Path *path, int i){
 }
 
 
+void mergePaths(struct PathMerger *pmerger, int i){
+    pmerger->upperPath->topy[i] = pmerger->upperPath->topy[i - 1];
+    pmerger->lowerPath->boty[i] = pmerger->lowerPath->boty[i - 1];
+
+    if(!pmerger->is_upper_done){
+        pmerger->upperPath->topy[i] -= pmerger->upperVelocity; 
+        
+        if(pmerger->upperPath->topy[i] <= pmerger->endtopy){
+            pmerger->is_upper_done = true;
+            pmerger->upperPath->topy[i] = pmerger->endtopy;
+        }
+    }
+
+    if(!pmerger->is_lower_done){
+        pmerger->lowerPath->boty[i] += pmerger->lowerVelocity; 
+        
+        if(pmerger->lowerPath->boty[i] >= pmerger->endboty){
+            pmerger->is_lower_done = true;
+            pmerger->upperPath->boty[i] = pmerger->endboty;
+        }
+    }
+}
+
+
 
 #endif
