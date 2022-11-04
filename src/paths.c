@@ -26,8 +26,8 @@ struct PathMerger{
     int endtopy;
     int endboty;
 
-    int is_upper_done;
-    int is_lower_done;
+    bool is_upper_done;
+    bool is_lower_done;
 };
 
 
@@ -62,6 +62,9 @@ void mergePaths(struct PathMerger *pmerger, int i){
             pmerger->upperPath->boty[i] = pmerger->endboty;
         }
     }
+
+    pmerger->upperPath->boty[i] = pmerger->upperPath->topy[i] - rand()%(pmerger->upperPath->topy[i] - pmerger->upperPath->maxboty);
+    pmerger->lowerPath->topy[i] = pmerger->lowerPath->boty[i] + rand()%(pmerger->lowerPath->maxtopy - pmerger->lowerPath->boty[i]);
 }
 
 
