@@ -1,5 +1,5 @@
-#ifndef TR_SETUP_NCURSES_C
-#define TR_SETUP_NCURSES_C
+#ifndef _TR_SETUP_NCURSES_C
+#define _TR_SETUP_NCURSES_C
 
 #include <ncurses.h>
 

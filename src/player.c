@@ -1,5 +1,5 @@
-#ifndef TR_PLAYER_C
-#define TR_PLAYER_C
+#ifndef _TR_PLAYER_C
+#define _TR_PLAYER_C
 
 
 #define MV_KEY_UP 3

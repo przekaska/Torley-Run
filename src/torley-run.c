@@ -1,3 +1,7 @@
+#ifndef _TR_C
+#define _TR_C
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <ncurses.h>
@@ -13,8 +17,10 @@ void game_loop(){
     struct Player player;
     init_player(&player);
 
-    while( (key = getch()) != 10){
+    for(int i = 0; (key = getch()) != 10; i++){
         player_move(&player, key);
+
+
         check_if_hit(&player);
         draw_player(&player);
 
@@ -34,3 +40,4 @@ int main(){
 }
 
 
+#endif
