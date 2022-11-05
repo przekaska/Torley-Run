@@ -12,7 +12,7 @@ struct Path{
     int maxtopy;
     int maxboty;
 
-    void (*behaviour)(struct Path*, int);
+    void (*state)(struct Path*, int);
 };
 
 
