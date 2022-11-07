@@ -7,7 +7,7 @@
 #include "player.c"
 
 
-#define STATE_LENGTH 24     // how much iteration takes to change a state
+#define STATE_LENGTH 24     // how much iterations takes to change a state
 
 
 struct Path{
@@ -66,9 +66,9 @@ void merge_paths(struct Path *upper_p, struct Path *lower_p, int uvelocity,
 void fork_paths(struct Path *upper_p, int uvelocity, int lvelocity, int iterator,
                  int up_endtopy, int up_endboty, int lp_endtopy, int lp_endboty){
 
-    static struct Path lower_p; // at the beggining lower and upper path are at the same place
+    static struct Path lower_p; // at the beggining lower and upper path are in the same place
     memcpy(lower_p.topy, upper_p->topy, WINDOW_WIDTH + STATE_LENGTH);   // copy values of the topy and boty arrays instead of pointers to them
-    memcpy(lower_p.boty, upper_p->boty, WINDOW_WIDTH + STATE_LENGTH);   // because lower_path's y-coords are going to be changed differently
+    memcpy(lower_p.boty, upper_p->boty, WINDOW_WIDTH + STATE_LENGTH);   // because lower_path's y-coords are going to be changed independently
 
     for(int i = iterator - STATE_LENGTH; i < iterator; i++){ // change the end of the path that won't be displayed
         upper_p->boty[i] = upper_p->boty[i - 1];
