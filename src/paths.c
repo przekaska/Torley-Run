@@ -5,67 +5,30 @@
 
 #include "player.c"
 
+
+#define STATE_LENGTH 24
+
+
 struct Path{
-    int topy[WINDOW_WIDTH];
-    int boty[WINDOW_WIDTH];
+    int topy[WINDOW_HEIGHT + STATE_LENGTH];
+    int boty[WINDOW_HEIGHT + STATE_LENGTH];
 
     int maxtopy;
     int maxboty;
-
-    void (*state)(struct Path*, int);
 };
 
 
-struct PathMerger{
-    struct Path *upperPath;
-    struct Path *lowerPath;
-    
-    int upperVelocity;
-    int lowerVelocity;
+void continue_path(struct Path *p, int iterator){
+    for(int i = iterator - STATE_LENGTH; i < iterator; i++){
+        p->topy[i] = p->boty[i - 1] + rand()%(p->maxtopy - p->boty[i - 1]);
 
-    int endtopy;
-    int endboty;
-
-    bool is_upper_done;
-    bool is_lower_done;
-};
-
-
-void continuePath(struct Path *path, int i){
-    path->topy[i] = path->boty[i - 1] + rand()%(path->maxtopy - path->boty[i - 1]);
-
-    if(path->topy[i - 1] < path->topy[i])
-        path->boty[i] = path->topy[i - 1] - rand()%(path->topy[i - 1] - path->maxboty);
-    else
-        path->boty[i] = path->topy[i] - rand()%(path->topy[i] - path->maxboty); 
+        if(p->topy[i - 1] < p->topy[i])
+            p->boty[i] = p->topy[i - 1] - rand()%(p->maxtopy - p->boty[i - 1]);
+        else
+            p->boty[i] = p->topy[i] - rand()%(p->topy[i] - p->maxboty); 
+    }
 }
 
-
-void mergePaths(struct PathMerger *pmerger, int i){
-    pmerger->upperPath->topy[i] = pmerger->upperPath->topy[i - 1];
-    pmerger->lowerPath->boty[i] = pmerger->lowerPath->boty[i - 1];
-
-    if(!pmerger->is_upper_done){
-        pmerger->upperPath->topy[i] -= pmerger->upperVelocity; 
-        
-        if(pmerger->upperPath->topy[i] <= pmerger->endtopy){
-            pmerger->is_upper_done = true;
-            pmerger->upperPath->topy[i] = pmerger->endtopy;
-        }
-    }
-
-    if(!pmerger->is_lower_done){
-        pmerger->lowerPath->boty[i] += pmerger->lowerVelocity; 
-        
-        if(pmerger->lowerPath->boty[i] >= pmerger->endboty){
-            pmerger->is_lower_done = true;
-            pmerger->upperPath->boty[i] = pmerger->endboty;
-        }
-    }
-
-    pmerger->upperPath->boty[i] = pmerger->upperPath->topy[i] - rand()%(pmerger->upperPath->topy[i] - pmerger->upperPath->maxboty);
-    pmerger->lowerPath->topy[i] = pmerger->lowerPath->boty[i] + rand()%(pmerger->lowerPath->maxtopy - pmerger->lowerPath->boty[i]);
-}
 
 
 
