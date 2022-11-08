@@ -11,6 +11,9 @@
 
 #define NUMBER_OF_PATHS 16
 
+struct Path *paths[NUMBER_OF_PATHS];    // decided to make paths global, instead of artifically keeping them
+                                        // local by passing pointer across the functions
+
 struct Path{
     /*  Length of array of y-values is equal to WINDOW_WIDTH (part of the path
         that is displayed) + STATE_LENGTH (this part is modified by state functions)*/
@@ -21,27 +24,31 @@ struct Path{
     int minboty;    // boty cannot be lower than this value
 };
 
-
+/*  Function add given path to the paths array in the proper index, so the paths are sorted in descending order
+    (Paths that are higher on the screen first). The last path in the array needs to be disabled, because it will
+    be overwritten by the penultimate path.*/
 int add_path(struct Path *added_path){
-    if(paths[NUMBER_OF_PATHS]->maxtopy == -1){
+    if(paths[NUMBER_OF_PATHS]->maxtopy == -1){  // replace only disabled path, which is at the end of the paths array
         int i = NUMBER_OF_PATHS;
-        for(;(paths[i]->maxtopy < paths[i - 1]->maxtopy) && (i > 0); i--)
+        for(;(paths[i]->maxtopy < paths[i - 1]->maxtopy) && (i > 0); i--)   // create place for new path   
             paths[i] = paths[i - 1];
         paths[i] = added_path;
         return i;   // return index at which path has been added
     }
-    else return -1;
+    else return -1; // if there is no disabled path, array is full
 }
 
-
+/* Function moves given path to the end of the paths array, and then disables the path
+   by changing it maxtopy to -1. Disabling the path instead of deleting it provides possibility
+   of restoring the path really easily just by changing its maxtopy*/
 void delete_path(int index){
-    struct Path *paths_buffer = paths[index];
+    struct Path *path_buffer = paths[index];
 
-    for(int i = index; i < NUMBER_OF_PATHS - 1; i++)
-        paths[i] = paths[i + 1];
+    for(int i = index; i < NUMBER_OF_PATHS - 1; i++)    // disabled path needs to be at the end, so move 
+        paths[i] = paths[i + 1];                        // every other path one index to the front
 
-    paths[NUMBER_OF_PATHS] = paths_buffer;
-    paths[NUMBER_OF_PATHS]->maxtopy = -1;
+    paths[NUMBER_OF_PATHS] = path_buffer;  
+    paths[NUMBER_OF_PATHS]->maxtopy = -1;   // path which maxtopy = -1 is supposed to be ignored
 }
 
 
