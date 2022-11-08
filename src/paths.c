@@ -34,6 +34,17 @@ int add_path(struct Path *added_path){
 }
 
 
+void delete_path(int index){
+    struct Path *paths_buffer = paths[index];
+
+    for(int i = index; i < NUMBER_OF_PATHS - 1; i++)
+        paths[i] = paths[i + 1];
+
+    paths[NUMBER_OF_PATHS] = paths_buffer;
+    paths[NUMBER_OF_PATHS]->maxtopy = -1;
+}
+
+
 /* This function performes state: CONTINUE */
 void continue_path(struct Path *p, int iterator){
     for(int i = iterator - STATE_LENGTH; i < iterator; i++){    // change the end of path that won't be displayed
