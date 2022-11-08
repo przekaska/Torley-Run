@@ -24,15 +24,15 @@ struct Path{
     int minboty;    // boty cannot be lower than this value
 };
 
-/*  Function add given path to the paths array in the proper index, so the paths are sorted in descending order
-    (Paths that are higher on the screen first). The last path in the array needs to be disabled, because it will
-    be overwritten by the penultimate path.*/
-int add_path(struct Path *added_path){
+/*  Function adds given path to the paths array on the proper index, so the paths are sorted in descending order
+    (Paths that are higher on the screen first). The last path in the array needs to be already disabled, because 
+    it is going to be overwritten by the penultimate path.*/
+int add_path(struct Path *new_path){
     if(paths[NUMBER_OF_PATHS]->maxtopy == -1){  // replace only disabled path, which is at the end of the paths array
         int i = NUMBER_OF_PATHS;
-        for(;(paths[i]->maxtopy < paths[i - 1]->maxtopy) && (i > 0); i--)   // create place for new path   
+        for(;(new_path->maxtopy < paths[i - 1]->maxtopy) && (i > 0); i--)   // create place for the new path   
             paths[i] = paths[i - 1];
-        paths[i] = added_path;
+        paths[i] = new_path;
         return i;   // return index at which path has been added
     }
     else return -1; // if there is no disabled path, array is full
