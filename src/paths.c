@@ -9,6 +9,7 @@
 
 #define STATE_LENGTH 24     // how much iterations takes to change a state
 
+#define NUMBER_OF_PATHS 16
 
 struct Path{
     /*  Length of array of y-values is equal to WINDOW_WIDTH (part of the path
@@ -19,6 +20,19 @@ struct Path{
     int maxtopy;    // topy cannot exceed this value
     int minboty;    // boty cannot be lower than this value
 };
+
+
+int add_path(struct Path *added_path){
+    if(paths[NUMBER_OF_PATHS]->maxtopy == -1){
+        int i = NUMBER_OF_PATHS;
+        for(;(paths[i]->maxtopy < paths[i - 1]->maxtopy) && (i > 0); i--)
+            paths[i] = paths[i - 1];
+        paths[i] = added_path;
+        return i;   // return index at which path has been added
+    }
+    else return -1;
+}
+
 
 /* This function performes state: CONTINUE */
 void continue_path(struct Path *p, int iterator){
@@ -96,8 +110,9 @@ void fork_paths(struct Path *upper_p, int uvelocity, int lvelocity, int iterator
 
     lower_p.maxtopy = lp_endtopy;
     lower_p.minboty = lp_endtopy;
-}
 
+    add_path(&lower_p);    
+}
 
 
 #endif
