@@ -12,16 +12,22 @@
 #include "paths.c"
 
 
+struct Path *paths[NUMBER_OF_PATHS];    // decided to make paths global, instead of artifically keeping them
+                                        // local by passing pointer across the functions
 void game_loop(){
     char key = 0;
     struct Player player;
-    init_player(&player);
+    init_player(&player);    
 
-    struct Path paths[NUMBER_OF_PATHS];    
+    for(int iterator = 0; (key = getch()) != 10; iterator++){
+        if(iterator == WINDOW_WIDTH + STATE_LENGTH)
+            iterator = 0;
 
-    for(int i = 0; (key = getch()) != 10; i++){
         player_move(&player, key);
-
+        
+        if(iterator%STATE_LENGTH == 0){
+            change_paths(iterator);
+        }
 
         check_if_hit(&player);
         draw_player(&player);
