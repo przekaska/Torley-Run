@@ -17,6 +17,8 @@ void game_loop(){
     struct Player player;
     init_player(&player);
 
+    struct Path paths[NUMBER_OF_PATHS];    
+
     for(int i = 0; (key = getch()) != 10; i++){
         player_move(&player, key);
 
