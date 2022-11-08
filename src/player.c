@@ -1,6 +1,7 @@
 #ifndef _TR_PLAYER_C
 #define _TR_PLAYER_C
 
+#include <ncurses.h>
 
 #define MV_KEY_UP 3
 #define MV_KEY_DOWN 2
