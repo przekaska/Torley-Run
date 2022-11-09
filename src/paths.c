@@ -1,13 +1,15 @@
 #ifndef TR_PATHS_C
 #define TR_PATHS_C
 
+#include <stdlib.h>
+
 #include <stdbool.h>
 #include <string.h>
 
 #include "player.c"
 
 
-#define STATE_LENGTH 24     // how much iterations takes to change a state
+#define STATE_LENGTH 28     // how much iterations takes to change a state
 
 #define NUMBER_OF_PATHS 16
 
@@ -17,19 +19,19 @@ struct Path *paths[NUMBER_OF_PATHS];    // decided to make paths global, instead
 struct Path{
     /*  Length of array of y-values is equal to WINDOW_WIDTH (part of the path
         that is displayed) + STATE_LENGTH (this part is modified by state functions)*/
-    int topy[WINDOW_WIDTH + STATE_LENGTH];      // y-values at the top of the path
-    int boty[WINDOW_WIDTH + STATE_LENGTH];      // y-values at the bottom of the path
+    int8_t topy[WINDOW_WIDTH + STATE_LENGTH];      // y-values at the top of the path
+    int8_t boty[WINDOW_WIDTH + STATE_LENGTH];      // y-values at the bottom of the path
 
-    int maxtopy;    // topy cannot exceed this value
-    int minboty;    // boty cannot be lower than this value
+    int8_t maxtopy;    // topy cannot exceed this value
+    int8_t minboty;    // boty cannot be lower than this value
 };
 
 /*  Function adds given path to the paths array on the proper index, so the paths are sorted in descending order
     (Paths that are higher on the screen first). The last path in the array needs to be already disabled, because 
     it is going to be overwritten by the penultimate path.*/
-int add_path(struct Path *new_path){
+uint8_t add_path(struct Path *new_path){
     if(paths[NUMBER_OF_PATHS]->maxtopy == -1){  // replace only disabled path, which is at the end of the paths array
-        int i = NUMBER_OF_PATHS;
+        uint8_t i = NUMBER_OF_PATHS;
         for(;(new_path->maxtopy < paths[i - 1]->maxtopy) && (i > 0); i--)   // create place for the new path   
             paths[i] = paths[i - 1];
         paths[i] = new_path;
@@ -41,10 +43,10 @@ int add_path(struct Path *new_path){
 /* Function moves given path to the end of the paths array, and then disables the path
    by changing it maxtopy to -1. Disabling the path instead of deleting it provides possibility
    of restoring the path really easily just by changing its maxtopy*/
-void delete_path(int index){
+void delete_path(uint8_t index){
     struct Path *path_buffer = paths[index];
 
-    for(int i = index; i < NUMBER_OF_PATHS - 1; i++)    // disabled path needs to be at the end, so move 
+    for(uint8_t i = index; i < NUMBER_OF_PATHS - 1; i++)    // disabled path needs to be at the end, so move 
         paths[i] = paths[i + 1];                        // every other path one index to the front
 
     paths[NUMBER_OF_PATHS] = path_buffer;  
@@ -53,9 +55,9 @@ void delete_path(int index){
 
 
 /* This function performes state: CONTINUE */
-void __continue(struct Path *p, int iterator){
-    for(int i = iterator - STATE_LENGTH; i < iterator; i++){    // change the end of path that won't be displayed
-    
+void __continue(struct Path *p, uint8_t iterator){
+    for(uint8_t i = iterator - STATE_LENGTH; i < iterator; i++){    // change the end of path that won't be displayed
+        i &= ~(1U << 7);  
         p->topy[i] = p->boty[i - 1] + rand()%(p->maxtopy - p->boty[i - 1]); // add rand()%(p->maxtopy - p->boty[i - 1] so the topy[i] >= boty[i-1] and 
                                                                             // topy[i] <= maxtopy, thanks to that there is at least one block for player
                                                                             // to pass through
@@ -68,9 +70,11 @@ void __continue(struct Path *p, int iterator){
 
 /*  Merge two paths by bringing them together. Upper path is going down by 'uvelocity' blocks per iteration
     untill its topy reaches 'endtopy'. Lower path is going up by 'lvelocity' untill its boty reaches 'endboty'*/
-void __merge(struct Path *upper_p, struct Path *lower_p, int uvelocity, 
-                int lvelocity, int endtopy, int endboty, int iterator){
-    for(int i = iterator - STATE_LENGTH; i < iterator; i++){ // change the end of the path that won't be displayed
+void __merge(struct Path *upper_p, struct Path *lower_p, uint8_t uvelocity, 
+                uint8_t lvelocity, uint8_t endtopy, uint8_t endboty, uint8_t iterator){
+    for(uint8_t i = iterator - STATE_LENGTH; i < iterator; i++){ // change the end of the path that won't be displayed
+        i &= ~(1U << 7);
+        
         upper_p->topy[i] = upper_p->topy[i - 1];
         lower_p->boty[i] = lower_p->boty[i - 1];
 
@@ -98,14 +102,16 @@ void __merge(struct Path *upper_p, struct Path *lower_p, int uvelocity,
 /*  Make a fork of the path. The parent path becomes the upper path and the child path becomes the lower path.
     Upper path is going up by 'uvelocity' per iteration untill its boty reaches the 'up_endboty' (upper path end boty)
     Lower path is going down by 'lvelocity' per iteration untill its topy reaches the 'lp_endtopy' (lower path end topy)*/
-void __fork(struct Path *upper_p, int uvelocity, int lvelocity, int up_endtopy, 
-                 int up_endboty, int lp_endtopy, int lp_endboty, int iterator){
+void __fork(struct Path *upper_p, uint8_t uvelocity, uint8_t lvelocity, uint8_t up_endtopy, 
+                 uint8_t up_endboty, uint8_t lp_endtopy, uint8_t lp_endboty, uint8_t iterator){
 
     static struct Path lower_p; // at the beggining lower and upper path are in the same place
     memcpy(lower_p.topy, upper_p->topy, WINDOW_WIDTH + STATE_LENGTH);   // copy values of the topy and boty arrays instead of pointers to them
     memcpy(lower_p.boty, upper_p->boty, WINDOW_WIDTH + STATE_LENGTH);   // because lower_path's y-coords are going to be changed independently
 
-    for(int i = iterator - STATE_LENGTH; i < iterator; i++){ // change the end of the path that won't be displayed
+    for(uint8_t i = iterator - STATE_LENGTH; i < iterator; i++){ // change the end of the path that won't be displayed
+        i &= ~(1U << 7);
+    
         upper_p->boty[i] = upper_p->boty[i - 1];
         lower_p.topy[i] = lower_p.topy[i - 1];
 
@@ -139,11 +145,11 @@ void __fork(struct Path *upper_p, int uvelocity, int lvelocity, int up_endtopy,
 
 
 /*  Sets up values for merging and call __merge function*/
-void merge_paths(int iterator, int *i){
-    int uvelocity = rand()%(paths[*i]->topy[iterator] - paths[*i]->boty[iterator]); // velocity needs to be smaller than path's width
-    int lvelocity = rand()%(paths[*i + 1]->topy[iterator] - paths[*i + 1]->boty[iterator]);
-    int endtopy = paths[*i]->topy[iterator] - rand()%(paths[*i]->topy[iterator] - paths[*i + 1]->boty[iterator]); // up->topy >= endtopy >=lp->boty 
-    int endboty = endtopy - rand()%(endtopy - paths[*i + 1]->boty[iterator]); // endtopy >= endboty <= lp->boty
+void merge_paths(uint8_t iterator, uint8_t *i){
+    uint8_t uvelocity = rand()%(paths[*i]->topy[iterator] - paths[*i]->boty[iterator]); // velocity needs to be smaller than path's width
+    uint8_t lvelocity = rand()%(paths[*i + 1]->topy[iterator] - paths[*i + 1]->boty[iterator]);
+    uint8_t endtopy = paths[*i]->topy[iterator] - rand()%(paths[*i]->topy[iterator] - paths[*i + 1]->boty[iterator]); // up->topy >= endtopy >=lp->boty 
+    uint8_t endboty = endtopy - rand()%(endtopy - paths[*i + 1]->boty[iterator]); // endtopy >= endboty <= lp->boty
 
     __merge(paths[*i], paths[*i + 1], uvelocity, lvelocity, endtopy, endboty, iterator);
     *i++;   // the next path (lower path) is already merging with the current path, so step over the next one.
@@ -151,20 +157,20 @@ void merge_paths(int iterator, int *i){
 
 
 /*  Sets up values for forking and call __fork function*/
-void fork_paths(int iterator, int *i){
-    int uvelocity = rand()&(paths[*i]->topy[iterator] - paths[*i]->boty[iterator]); // velocity needs to be smaller than path's width. Upper and lower
-    int lvelocity = rand()&(paths[*i]->topy[iterator] - paths[*i]->boty[iterator]); // path at the beginning look the same so they width is the same
-    int up_endboty = paths[*i]->maxtopy - rand()%(paths[*i]->maxtopy - paths[*i]->boty[iterator]); // 
-    int lp_endtopy = up_endboty - rand()%(up_endboty - paths[*i]->minboty);
-    int lp_endboty = lp_endtopy - rand()%(lp_endtopy - paths[*i]->minboty); 
+void fork_paths(uint8_t iterator, uint8_t *i){
+    uint8_t uvelocity = rand()&(paths[*i]->topy[iterator] - paths[*i]->boty[iterator]); // velocity needs to be smaller than path's width. Upper and lower
+    uint8_t lvelocity = rand()&(paths[*i]->topy[iterator] - paths[*i]->boty[iterator]); // path at the beginning look the same so they width is the same
+    uint8_t up_endboty = paths[*i]->maxtopy - rand()%(paths[*i]->maxtopy - paths[*i]->boty[iterator]); // 
+    uint8_t lp_endtopy = up_endboty - rand()%(up_endboty - paths[*i]->minboty);
+    uint8_t lp_endboty = lp_endtopy - rand()%(lp_endtopy - paths[*i]->minboty); 
 
     __fork(paths[*i], uvelocity, lvelocity, paths[*i]->maxtopy, up_endboty, lp_endtopy, lp_endboty, iterator);    
 }
 
 
-void change_paths(int iterator){
-    int r;
-    for(int i = 0; i < NUMBER_OF_PATHS; i++){
+void change_paths(uint8_t iterator){
+    uint8_t r;
+    for(uint8_t i = 0; i < NUMBER_OF_PATHS; i++){
         r = rand()%100;
         if(r < 10)
             merge_paths(iterator, &i);
