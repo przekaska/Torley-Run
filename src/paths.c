@@ -133,5 +133,9 @@ void __fork(struct Path *upper_p, int uvelocity, int lvelocity, int up_endtopy,
     /*TODO: ADDING PATH BUT AT THE END OF CHANGING_STATES*/    
 }
 
+/*  Setting up macro instead of renaming '__continue' to 'continue_path' just for consistency.
+    It is supposed to obey the same rule as 'merge_paths' and 'fork_paths'*/
+#define continue_path(iterator, i) __continue(paths[*i], iterator) 
+
 
 #endif
