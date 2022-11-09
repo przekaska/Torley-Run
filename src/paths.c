@@ -162,4 +162,18 @@ void fork_paths(int iterator, int *i){
 }
 
 
+void change_paths(int iterator){
+    int r;
+    for(int i = 0; i < NUMBER_OF_PATHS; i++){
+        r = rand()%100;
+        if(r < 10)
+            merge_paths(iterator, &i);
+        if(r > 10)
+            fork_paths(iterator, &i);
+        else
+            continue_path(iterator, &i);
+    }            
+}
+
+
 #endif
