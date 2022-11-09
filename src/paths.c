@@ -138,4 +138,16 @@ void __fork(struct Path *upper_p, int uvelocity, int lvelocity, int up_endtopy,
 #define continue_path(iterator, i) __continue(paths[*i], iterator) 
 
 
+/*  Sets up values for merging and call __merge function*/
+void merge_paths(int iterator, int *i){
+    int uvelocity = rand()%(paths[*i]->topy[iterator] - paths[*i]->boty[iterator]); // velocity needs to be smaller than path's width
+    int lvelocity = rand()%(paths[*i + 1]->topy[iterator] - paths[*i + 1]->boty[iterator]);
+    int endtopy = paths[*i]->topy[iterator] - rand()%(paths[*i]->topy[iterator] - paths[*i + 1]->boty[iterator]); // up->topy >= endtopy >=lp->boty 
+    int endboty = endtopy - rand()%(endtopy - paths[*i + 1]->boty[iterator]); // endtopy >= endboty <= lp->boty
+
+    __merge(paths[*i], paths[*i + 1], uvelocity, lvelocity, endtopy, endboty, iterator);
+    *i++;   // the next path (lower path) is already merging with the current path, so step over the next one.
+}
+
+
 #endif
