@@ -53,7 +53,7 @@ void delete_path(int index){
 
 
 /* This function performes state: CONTINUE */
-void continue_path(struct Path *p, int iterator){
+void __continue(struct Path *p, int iterator){
     for(int i = iterator - STATE_LENGTH; i < iterator; i++){    // change the end of path that won't be displayed
     
         p->topy[i] = p->boty[i - 1] + rand()%(p->maxtopy - p->boty[i - 1]); // add rand()%(p->maxtopy - p->boty[i - 1] so the topy[i] >= boty[i-1] and 
@@ -68,7 +68,7 @@ void continue_path(struct Path *p, int iterator){
 
 /*  Merge two paths by bringing them together. Upper path is going down by 'uvelocity' blocks per iteration
     untill its topy reaches 'endtopy'. Lower path is going up by 'lvelocity' untill its boty reaches 'endboty'*/
-void merge_paths(struct Path *upper_p, struct Path *lower_p, int uvelocity, 
+void __merge(struct Path *upper_p, struct Path *lower_p, int uvelocity, 
                 int lvelocity, int endtopy, int endboty, int iterator){
     for(int i = iterator - STATE_LENGTH; i < iterator; i++){ // change the end of the path that won't be displayed
         upper_p->topy[i] = upper_p->topy[i - 1];
@@ -89,14 +89,17 @@ void merge_paths(struct Path *upper_p, struct Path *lower_p, int uvelocity,
         upper_p->boty[i] = upper_p->topy[i] - rand()%(upper_p->topy[i] - endboty);  // upper_p->topy[i] >= boty[i] >= endboty
         lower_p->topy[i] = lower_p->boty[i] + rand()%(endtopy - lower_p->boty[i]);  // lower_p->boty[i] <= lower_p->topy[i] <= endtopy 
     }
+    upper_p->minboty = lower_p->minboty;
+
+    /*TODO: DELETE LOWER PATH*/
 }
 
 
 /*  Make a fork of the path. The parent path becomes the upper path and the child path becomes the lower path.
     Upper path is going up by 'uvelocity' per iteration untill its boty reaches the 'up_endboty' (upper path end boty)
     Lower path is going down by 'lvelocity' per iteration untill its topy reaches the 'lp_endtopy' (lower path end topy)*/
-void fork_paths(struct Path *upper_p, int uvelocity, int lvelocity, int iterator,
-                 int up_endtopy, int up_endboty, int lp_endtopy, int lp_endboty){
+void __fork(struct Path *upper_p, int uvelocity, int lvelocity, int up_endtopy, 
+                 int up_endboty, int lp_endtopy, int lp_endboty, int iterator){
 
     static struct Path lower_p; // at the beggining lower and upper path are in the same place
     memcpy(lower_p.topy, upper_p->topy, WINDOW_WIDTH + STATE_LENGTH);   // copy values of the topy and boty arrays instead of pointers to them
@@ -123,13 +126,11 @@ void fork_paths(struct Path *upper_p, int uvelocity, int lvelocity, int iterator
     }    
 
     // new limit values for each path
-    upper_p->maxtopy = up_endtopy;
-    upper_p->minboty = up_endboty;
+    lower_p.minboty = upper_p->minboty;
+    upper_p->minboty = up_endboty; // upper path maxboty stays the same
+    lower_p.maxtopy = upper_p->minboty - 2;
 
-    lower_p.maxtopy = lp_endtopy;
-    lower_p.minboty = lp_endtopy;
-
-    add_path(&lower_p);    
+    /*TODO: ADDING PATH BUT AT THE END OF CHANGING_STATES*/    
 }
 
 
