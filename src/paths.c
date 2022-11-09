@@ -150,4 +150,16 @@ void merge_paths(int iterator, int *i){
 }
 
 
+/*  Sets up values for forking and call __fork function*/
+void fork_paths(int iterator, int *i){
+    int uvelocity = rand()&(paths[*i]->topy[iterator] - paths[*i]->boty[iterator]); // velocity needs to be smaller than path's width. Upper and lower
+    int lvelocity = rand()&(paths[*i]->topy[iterator] - paths[*i]->boty[iterator]); // path at the beginning look the same so they width is the same
+    int up_endboty = paths[*i]->maxtopy - rand()%(paths[*i]->maxtopy - paths[*i]->boty[iterator]); // 
+    int lp_endtopy = up_endboty - rand()%(up_endboty - paths[*i]->minboty);
+    int lp_endboty = lp_endtopy - rand()%(lp_endtopy - paths[*i]->minboty); 
+
+    __fork(paths[*i], uvelocity, lvelocity, paths[*i]->maxtopy, up_endboty, lp_endtopy, lp_endboty, iterator);    
+}
+
+
 #endif
