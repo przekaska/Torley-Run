@@ -12,12 +12,12 @@
 
 #define BACKGROUND_ELEMENT ' '
 
-#define WINDOW_HEIGHT 20
-#define WINDOW_WIDTH 100
+#define WINDOW_HEIGHT 24
+#define WINDOW_WIDTH 80
 
  struct Player{
     uint8_t y;
-    uint8_t x;
+    int x;
     uint8_t previous_y;
 
     int skin;
