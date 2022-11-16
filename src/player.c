@@ -55,7 +55,7 @@ void check_if_hit(struct Player *player){
 
 
 
- void draw_player(struct Player *player){
+void draw_player(struct Player *player){
     mvaddch(WINDOW_HEIGHT - player->previous_y, DEFAULT_PLAYER_X, BACKGROUND_ELEMENT);
     mvaddch(WINDOW_HEIGHT - player->y, DEFAULT_PLAYER_X, player->skin);
 }

@@ -14,6 +14,7 @@
 #define NUMBER_OF_PATHS 10
 #define NUMBER_OF_Y_VALUES 32
 
+#define BACKGROUND_BLOCK 'T';
 
 struct Path{
     /*  Length of array of y-values is equal to WINDOW_WIDTH (part of the path
@@ -34,13 +35,12 @@ void init_paths(struct Path paths[NUMBER_OF_PATHS]){
 
     paths[0].boty[NUMBER_OF_Y_VALUES - 1] = 10;
 
-    paths[0].maxtopy = WINDOW_HEIGHT;
+    paths[0].maxtopy = WINDOW_HEIGHT - 1;
     paths[0].minboty = 0;
 }
 
 
 uint8_t add_path(struct Path paths[NUMBER_OF_PATHS], struct Path new_path){
-    mvprintw(4, 81, "ADD");
     if(paths[NUMBER_OF_PATHS - 1].maxtopy == -1){  // replace only disabled path, which is at the end of the paths array        
         uint8_t i = NUMBER_OF_PATHS - 1;
         for(;(new_path.maxtopy > paths[i - 1].maxtopy) && (i > 0); i--)   // create place for the new path   
@@ -85,8 +85,6 @@ void continue_path(struct Path *p, uint8_t startpoint){
 
 void fork_path(struct Path paths[NUMBER_OF_PATHS], struct Path *upper_p){
     if(upper_p->topy[NUMBER_OF_Y_VALUES - 1] - upper_p->boty[NUMBER_OF_Y_VALUES - 1] >= 2){
-        mvprintw(2, 81, "DO STHHHHH");
-
         upper_p->topy[0] = upper_p->topy[NUMBER_OF_Y_VALUES - 1];
         upper_p->boty[0] = upper_p->boty[NUMBER_OF_Y_VALUES - 1];
 
@@ -117,7 +115,6 @@ void change_paths(struct Path paths[NUMBER_OF_PATHS]){
     uint8_t r;
     for(uint8_t i = 0; (i < NUMBER_OF_PATHS && paths[i].maxtopy != -1); i++){
         r = rand()%100;
-        mvprintw(0,30, " %i           ", r);
         if(r < -1){
             if(paths[i + 1].maxtopy != -1){       
                 i++;
@@ -142,41 +139,20 @@ void init_background(char background[WINDOW_HEIGHT][WINDOW_WIDTH]){
 }
 
 
-void draw_paths(struct Path paths[NUMBER_OF_PATHS], char background[WINDOW_HEIGHT][WINDOW_WIDTH], u_int8_t iterator){
-    int8_t borders[NUMBER_OF_PATHS * 2];
-    int8_t path_iterator = 0;
-
-    bool block = true;
-
-    for(int i = 0; i < NUMBER_OF_PATHS; i++){
-        if(paths[i].maxtopy != -1){
-            borders[2 * i] = paths[i].topy[iterator];
-            borders[(2 * i) + 1] = paths[i].boty[iterator];
-        }
-        else{
-            borders[2 * i] = -1;
-            borders[(2 * i) + 1] = -1;
-        }
-
-        mvprintw(i, 90, "   %i, %i  ", borders[2 * i], borders[(2 * i)+1]); 
-    }
+void draw_paths(struct Path paths[NUMBER_OF_PATHS], char background[WINDOW_HEIGHT][WINDOW_WIDTH],
+                u_int8_t change_iterator, u_int8_t background_iterator){
+    for(int y = WINDOW_HEIGHT - 1; y >= 0; y--)
+        background[y][(background_iterator - 1)%WINDOW_WIDTH] = 'T';
     
-    for(int y = WINDOW_HEIGHT - 1; y > -1; y--)
-        for(int x = 0; x < WINDOW_WIDTH; x++)
-            background[y][x] = background[y][x + 1];
-         
+    for(int8_t i = 0; paths[i].maxtopy != -1 && i < NUMBER_OF_PATHS; i++)
+        for(int8_t y = paths[i].topy[change_iterator]; y >= paths[i].boty[change_iterator]; y--)
+            background[y][(background_iterator - 1)%WINDOW_WIDTH] = ' ';
+
     for(int y = WINDOW_HEIGHT - 1; y >= 0; y--){
-        if(paths[path_iterator / 2].maxtopy != -1 && y == borders[path_iterator]){
-            block = !block;
-            path_iterator++;
-        }
-        else
-            background[y][WINDOW_WIDTH - 1] = ' ' + (52 * block);
+        for(int x = 0; x < WINDOW_WIDTH; x++)
+            mvaddch(WINDOW_HEIGHT - y, x + 1, background[y][(background_iterator + x)%WINDOW_WIDTH]);
+        mvprintw(WINDOW_HEIGHT - y, WINDOW_WIDTH + 1, " %i", y);
     }
-    
-    // for(int y = WINDOW_HEIGHT - 1; y > -1; y--)
-        // for(int x = 0; x < WINDOW_WIDTH; x++)
-            // mvprintw(WINDOW_HEIGHT - y, x, "%i", background[y][x]);
 }
 
 
