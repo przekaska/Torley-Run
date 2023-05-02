@@ -1,2 +1,2 @@
 # Torley-Run
-Ncurses based arcade game.
+Unfinished ncurses based arcade game.
